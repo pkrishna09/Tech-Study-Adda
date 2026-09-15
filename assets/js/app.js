@@ -1,0 +1,593 @@
+(function () {
+  'use strict';
+
+  const $ = (selector, scope = document) => scope.querySelector(selector);
+  const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
+  const page = document.body.dataset.page || 'home';
+  const data = window.TSA_DEMO_DATA || {};
+  const config = window.TSA_CONFIG || {};
+  const store = window.TSAStore;
+  let settings = data.settings || {};
+  let allSearchItems = [];
+
+  const icons = {
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+    moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/>',
+    menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+    close: '<path d="m6 6 12 12M18 6 6 18"/>',
+    youtube: '<path d="M22 12s0-3.4-.44-5.03a2.6 2.6 0 0 0-1.83-1.83C18.2 4.7 12 4.7 12 4.7s-6.2 0-7.73.44a2.6 2.6 0 0 0-1.83 1.83C2 8.5 2 12 2 12s0 3.5.44 5.03a2.6 2.6 0 0 0 1.83 1.83c1.53.44 7.73.44 7.73.44s6.2 0 7.73-.44a2.6 2.6 0 0 0 1.83-1.83C22 15.5 22 12 22 12Z"/><path d="m10 15 5-3-5-3v6Z"/>',
+    telegram: '<path d="m22 2-7 20-4-8-8-4 19-8Z"/><path d="M11 14 22 2"/>',
+    arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    check: '<path d="m5 12 4 4L19 6"/>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13Z"/><path d="M8 7h8M8 11h6"/>',
+    graduation: '<path d="m2 10 10-5 10 5-10 5L2 10Z"/><path d="M6 12v5c3 2 9 2 12 0v-5M22 10v6"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>',
+    calculator: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h.01M12 19h.01M16 19h.01"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z"/>',
+    landmark: '<path d="m3 10 9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/>',
+    newspaper: '<path d="M4 4h13v16H4zM17 8h3v12h-3M7 8h7M7 12h7M7 16h4"/>',
+    quiz: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 1 1 4 2.2c-1 .6-1.5 1-1.5 2.3M12 17h.01"/>',
+    play: '<path d="m8 5 11 7-11 7V5Z"/>',
+    file: '<path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5M9 13h6M9 17h6"/>',
+    train: '<rect x="5" y="3" width="14" height="15" rx="3"/><path d="M8 21l2-3M16 18l2 3M8 8h8M8 13h.01M16 13h.01"/>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    eye: '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/>',
+    download: '<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>',
+    mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+    phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.4 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4 13 13 0 0 0 2.9.7A2 2 0 0 1 22 16.9Z"/>',
+    home: '<path d="m3 11 9-8 9 8M5 10v11h14V10M9 21v-7h6v7"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1"/>',
+    share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/>',
+    spark: '<path d="m12 3 1.4 4.6L18 9l-4.6 1.4L12 15l-1.4-4.6L6 9l4.6-1.4L12 3ZM19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15ZM5 14l.7 2.3L8 17l-2.3.7L5 20l-.7-2.3L2 17l2.3-.7L5 14Z"/>',
+    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>'
+  };
+
+  function icon(name, label = '') {
+    const path = icons[name] || icons.book;
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" ${label ? `role="img" aria-label="${escapeHTML(label)}"` : 'aria-hidden="true"'}>${path}</svg>`;
+  }
+
+  function escapeHTML(value = '') {
+    return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+  }
+
+  function sanitizeHTML(html = '') {
+    if (window.DOMPurify) return window.DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+    const template = document.createElement('template');
+    template.innerHTML = String(html);
+    template.content.querySelectorAll('script,style,iframe,object,embed,form,input,button').forEach((node) => node.remove());
+    template.content.querySelectorAll('*').forEach((node) => {
+      [...node.attributes].forEach((attr) => {
+        const name = attr.name.toLowerCase();
+        const value = attr.value.trim().toLowerCase();
+        if (name.startsWith('on') || name === 'style' || ((name === 'href' || name === 'src') && value.startsWith('javascript:'))) node.removeAttribute(attr.name);
+      });
+    });
+    return template.innerHTML;
+  }
+
+  function loadDOMPurify() {
+    if (window.DOMPurify) return Promise.resolve();
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js';
+      script.crossOrigin = 'anonymous';
+      script.referrerPolicy = 'no-referrer';
+      script.onload = resolve;
+      script.onerror = resolve;
+      document.head.append(script);
+    });
+  }
+
+  const formatDate = (value) => {
+    if (!value) return 'हाल ही में';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return new Intl.DateTimeFormat('hi-IN', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+  };
+  const formatNumber = (value = 0) => new Intl.NumberFormat('en-IN', { notation: Number(value) > 9999 ? 'compact' : 'standard' }).format(Number(value));
+  const getParam = (name) => new URLSearchParams(location.search).get(name);
+  const published = (items) => (items || []).filter((item) => !item.status || item.status === 'published' || (item.status === 'scheduled' && item.scheduled_for && new Date(item.scheduled_for) <= new Date()));
+
+  async function list(table, options = {}) {
+    try { return await store.list(table, options); }
+    catch (error) { console.warn(`Could not load ${table}`, error); return published(data[table] || []); }
+  }
+
+  function pageMeta(title, description, canonicalPath = location.pathname) {
+    const fullTitle = title.includes('Tech Study Adda') ? title : `${title} | Tech Study Adda`;
+    document.title = fullTitle;
+    const ensureMeta = (selector, attrs) => {
+      let element = $(selector);
+      if (!element) { element = document.createElement('meta'); document.head.append(element); }
+      Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
+    };
+    ensureMeta('meta[name="description"]', { name: 'description', content: description });
+    ensureMeta('meta[property="og:title"]', { property: 'og:title', content: fullTitle });
+    ensureMeta('meta[property="og:description"]', { property: 'og:description', content: description });
+    ensureMeta('meta[property="og:type"]', { property: 'og:type', content: page === 'post' ? 'article' : 'website' });
+    ensureMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' });
+    let canonical = $('link[rel="canonical"]');
+    if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.append(canonical); }
+    canonical.href = `${config.siteUrl || location.origin}${canonicalPath}`;
+  }
+
+  function structuredData(payload) {
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(payload).replace(/</g, '\\u003c');
+    document.head.append(script);
+  }
+
+  function headerTemplate() {
+    const active = {
+      home: 'index.html', career: 'career.html', exams: 'exams.html', 'gk-gs': 'gk-gs.html',
+      'current-affairs': 'current-affairs.html', 'study-material': 'study-material.html', quiz: 'quiz.html', videos: 'videos.html'
+    }[page];
+    const nav = [
+      ['index.html', 'Home'], ['career.html', 'Career Guidance'], ['exams.html', 'Govt Exams'], ['gk-gs.html', 'GK & GS'],
+      ['current-affairs.html', 'Current Affairs'], ['study-material.html', 'Study Material'], ['quiz.html', 'Quiz'], ['videos.html', 'Videos']
+    ];
+    return `
+      <a class="skip-link" href="#main-content">मुख्य सामग्री पर जाएँ</a>
+      <div class="topbar">
+        <div class="container topbar-inner">
+          <span>🎓 ${escapeHTML(settings.tagline || 'Learn Today, Achieve Tomorrow')}</span>
+          <div class="topbar-links"><span>सही जानकारी • सही करियर • बेहतर भविष्य</span><a href="mailto:${escapeHTML(settings.contact_email || config.contactEmail)}">${escapeHTML(settings.contact_email || config.contactEmail)}</a></div>
+        </div>
+      </div>
+      <header class="site-header" id="site-header">
+        <div class="container header-inner">
+          <a class="brand" href="index.html" aria-label="Tech Study Adda home"><img src="${escapeHTML(settings.logo_url || 'assets/images/logo.jpg')}" width="420" height="105" alt="Tech Study Adda trophy logo"></a>
+          <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+            ${nav.map(([href, label]) => `<a class="nav-link ${active === href ? 'active' : ''}" href="${href}">${label}</a>`).join('')}
+          </nav>
+          <div class="header-actions">
+            <button class="icon-btn" id="search-open" aria-label="Search website">${icon('search')}</button>
+            <button class="icon-btn" id="theme-toggle" aria-label="Dark mode">${icon('moon')}</button>
+            <a class="btn btn-youtube btn-sm subscribe-header" href="${escapeHTML(settings.youtube_url || config.youtubeUrl)}" target="_blank" rel="noopener">${icon('youtube')} Subscribe</a>
+            <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">${icon('menu')}</button>
+          </div>
+        </div>
+      </header>`;
+  }
+
+  function footerTemplate(categories = []) {
+    return `
+      <footer class="site-footer">
+        <div class="container footer-main">
+          <div class="footer-brand">
+            <img src="${escapeHTML(settings.logo_url || 'assets/images/logo.jpg')}" width="420" height="105" loading="lazy" alt="Tech Study Adda">
+            <p>हिंदी में career guidance, government exam updates, GK, current affairs, math tricks और free study material का भरोसेमंद educational platform.</p>
+            <div class="footer-socials">
+              <a href="${escapeHTML(settings.youtube_url || config.youtubeUrl)}" target="_blank" rel="noopener" aria-label="YouTube">${icon('youtube')}</a>
+              <a href="${escapeHTML(settings.telegram_url || config.telegramUrl)}" target="_blank" rel="noopener" aria-label="Telegram">${icon('telegram')}</a>
+              <a href="mailto:${escapeHTML(settings.contact_email || config.contactEmail)}" aria-label="Email">${icon('mail')}</a>
+            </div>
+          </div>
+          <div class="footer-column"><h3>Quick Links</h3><a href="about.html">About Us</a><a href="contact.html">Contact Us</a><a href="downloads.html">Downloads</a><a href="videos.html">YouTube Videos</a><a href="admin/login.html">Admin Login</a></div>
+          <div class="footer-column"><h3>Popular Topics</h3>${categories.slice(0, 6).map((cat) => `<a href="category.html?slug=${encodeURIComponent(cat.slug)}">${escapeHTML(cat.name_hi || cat.name)}</a>`).join('')}</div>
+          <div class="footer-column"><h3>Legal</h3><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms & Conditions</a><a href="disclaimer.html">Disclaimer</a><a href="sitemap.xml">Sitemap</a></div>
+        </div>
+        <div class="container footer-bottom"><span>© ${new Date().getFullYear()} Tech Study Adda. All rights reserved.</span><div class="footer-bottom-links"><span>Made for learners 🇮🇳</span><span>${escapeHTML(settings.tagline || 'Learn Today, Achieve Tomorrow')}</span></div></div>
+      </footer>
+      <dialog class="search-modal" id="search-modal" aria-labelledby="search-title">
+        <div class="modal-head"><h2 id="search-title">पूरी वेबसाइट में खोजें</h2><button class="icon-btn modal-close" aria-label="Close search">${icon('close')}</button></div>
+        <div class="modal-body"><input class="modal-search" id="global-search" type="search" placeholder="Post, exam, course या study material…" autocomplete="off"><div class="search-results" id="search-results"><div class="empty-state">खोज शुरू करने के लिए कम-से-कम 2 अक्षर लिखें।</div></div></div>
+      </dialog>
+      <dialog class="video-modal" id="video-modal" aria-labelledby="video-modal-title"><div class="modal-head"><h2 id="video-modal-title">Tech Study Adda Video</h2><button class="icon-btn modal-close" aria-label="Close video">${icon('close')}</button></div><div class="modal-body"><div class="embed" id="video-embed"></div></div></dialog>
+      <div class="toast-region" id="toast-region" aria-live="polite"></div>`;
+  }
+
+  function pageHero(title, description, current = title) {
+    return `<section class="page-hero"><div class="container"><div class="breadcrumbs"><a href="index.html">Home</a><span>›</span><span>${escapeHTML(current)}</span></div><h1>${escapeHTML(title)}</h1><p>${escapeHTML(description)}</p></div></section>`;
+  }
+
+  function sectionHeading(eyebrow, title, description, link = '', linkText = 'सभी देखें') {
+    return `<div class="section-heading reveal"><div><span class="eyebrow">${escapeHTML(eyebrow)}</span><h2>${escapeHTML(title)}</h2><p>${escapeHTML(description)}</p></div>${link ? `<a class="text-link" href="${link}">${escapeHTML(linkText)} →</a>` : ''}</div>`;
+  }
+
+  function categoryCard(category) {
+    return `<a class="category-card reveal" style="--category-color:${escapeHTML(category.color || '#155eef')}" href="category.html?slug=${encodeURIComponent(category.slug)}"><span class="category-icon">${icon(category.icon)}</span><h3>${escapeHTML(category.name_hi || category.name)}</h3><p>${escapeHTML(category.description || category.name)}</p></a>`;
+  }
+
+  function postImage(post) {
+    return post.featured_image
+      ? `<img src="${escapeHTML(post.featured_image)}" loading="lazy" width="640" height="360" alt="${escapeHTML(post.title)}">`
+      : `<span class="media-placeholder" style="--card-color:${escapeHTML(post.color || '#155eef')}">${icon(post.icon || 'book')}</span>`;
+  }
+
+  function postCard(post) {
+    return `<article class="content-card reveal"><a class="card-media" href="post.html?slug=${encodeURIComponent(post.slug)}">${postImage(post)}${post.featured ? '<span class="card-badge">Featured</span>' : ''}</a><div class="card-body"><div class="card-meta"><span>${icon('book')} ${escapeHTML(post.category || 'Education')}</span><span>${icon('clock')} ${escapeHTML(post.reading_time || 4)} min</span></div><h3><a href="post.html?slug=${encodeURIComponent(post.slug)}">${escapeHTML(post.title)}</a></h3><p>${escapeHTML(post.summary || '')}</p><div class="card-footer"><span class="card-meta">${formatDate(post.published_at)}</span><a href="post.html?slug=${encodeURIComponent(post.slug)}">पूरा पढ़ें →</a></div></div></article>`;
+  }
+
+  function miniCard(item, type = 'book') {
+    const href = item.slug ? `post.html?slug=${encodeURIComponent(item.slug)}` : '#';
+    return `<a class="mini-card reveal" href="${href}"><span class="mini-card-icon">${icon(type)}</span><span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary || item.description || '')}</p></span></a>`;
+  }
+
+  function downloadCard(item) {
+    return `<article class="download-card reveal"><div class="download-top"><span class="file-icon">${escapeHTML(item.file_type || 'FILE')}</span><div><h3>${escapeHTML(item.title)}</h3><div class="file-info">${escapeHTML(item.category || 'Study Material')} • ${escapeHTML(item.file_size || '—')}</div></div></div><p>${escapeHTML(item.description || '')}</p><div class="download-actions"><span class="download-count">${formatNumber(item.download_count)} downloads</span><button class="btn btn-primary btn-sm download-file" data-id="${escapeHTML(item.id)}" data-title="${escapeHTML(item.title)}" data-slug="${escapeHTML(item.slug || 'tech-study-adda-resource')}" data-description="${escapeHTML(item.description || '')}" data-file-url="${escapeHTML(item.file_url || '')}">${icon('download')} Download</button></div></article>`;
+  }
+
+  function videoCard(item) {
+    const id = item.youtube_id || extractYouTubeId(item.youtube_url);
+    const thumb = `https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`;
+    return `<article class="video-card reveal"><button class="video-thumb play-video" data-video-id="${escapeHTML(id)}" data-title="${escapeHTML(item.title)}" aria-label="Play ${escapeHTML(item.title)}"><img src="${thumb}" width="640" height="360" loading="lazy" alt="${escapeHTML(item.title)} video thumbnail"><span class="play-button">${icon('play')}</span><span class="video-duration">${escapeHTML(item.duration || 'Video')}</span></button><div class="video-info"><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.category || 'Education')} • No autoplay</p></div></article>`;
+  }
+
+  function extractYouTubeId(url = '') {
+    const match = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/i);
+    return match ? match[1] : '';
+  }
+
+  async function loadSettings() {
+    try {
+      const rows = await store.list('site_settings', { limit: 1 });
+      if (rows[0]) settings = { ...settings, ...rows[0] };
+    } catch (_) { /* demo settings are already loaded */ }
+  }
+
+  async function renderHome(main, collections) {
+    const { categories, posts, careers, exams, current, downloads, videos, quizzes, notices } = collections;
+    pageMeta('Tech Study Adda — पढ़ाई आसान, सफलता आपके पास', settings.hero_description);
+    main.innerHTML = `
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy reveal">
+            <span class="eyebrow"><span class="pulse-dot"></span> भारत का अपना Study Platform</span>
+            <h1>पढ़ाई आसान,<br><span>सफलता आपके पास</span></h1>
+            <p>${escapeHTML(settings.hero_description)}</p>
+            <div class="hero-actions"><a class="btn btn-youtube" href="${escapeHTML(settings.youtube_url || config.youtubeUrl)}" target="_blank" rel="noopener">${icon('youtube')} YouTube Subscribe</a><a class="btn btn-telegram" href="${escapeHTML(settings.telegram_url || config.telegramUrl)}" target="_blank" rel="noopener">${icon('telegram')} Telegram Join करें</a><a class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.35)" href="career.html">Career Roadmap ${icon('arrow')}</a></div>
+            <div class="trust-row"><span>${icon('check')} हिंदी में आसान समझ</span><span>${icon('check')} Free resources</span><span>${icon('check')} Exam-focused content</span></div>
+          </div>
+          <div class="hero-visual" aria-label="Education roadmap illustration">
+            <div class="visual-orbit"></div>
+            <div class="floating-badge badge-a">${icon('graduation')} Career Guidance</div><div class="floating-badge badge-b">${icon('quiz')} Daily Quiz</div><div class="floating-badge badge-c">${icon('file')} Free PDFs</div>
+            <div class="hero-main-card reveal"><img src="${escapeHTML(settings.logo_url || 'assets/images/logo.jpg')}" width="420" height="105" alt="Tech Study Adda logo"><h3>${escapeHTML(settings.tagline)}</h3><p>Learn • Practice • Improve • Achieve</p><div class="mini-stat"><div><strong>20+</strong><small>Categories</small></div><div><strong>100%</strong><small>Student First</small></div></div></div>
+          </div>
+        </div>
+      </section>
+      <div class="container ticker-wrap"><div class="ticker"><div class="ticker-label"><span class="pulse-dot"></span> Latest Updates</div><div class="ticker-track"><div class="ticker-items">${notices.map((notice) => `<a href="${escapeHTML(notice.url || '#')}">${escapeHTML(notice.title)}</a>`).join('')}</div></div></div></div>
+      <section class="section"><div class="container">${sectionHeading('Explore', 'पढ़ाई का सही रास्ता चुनें', 'Dynamic categories—नई category admin से जोड़ते ही यहाँ दिखाई देगी।', 'category.html')}<div class="category-grid">${categories.slice(0, 12).map(categoryCard).join('')}</div></div></section>
+      <section class="section section-white" data-home-section="career"><div class="container">${sectionHeading('Career Guidance', '10वीं और 12वीं के बाद क्या करें?', 'रुचि, eligibility, entrance exam और career scope समझकर सही course चुनें।', 'career.html')}<div class="split-grid"><div class="feature-panel reveal"><span class="eyebrow">Complete Roadmap</span><h2>Confusion से clarity तक—हर stream की साफ जानकारी</h2><p>Science, Commerce, Arts, Diploma, ITI, professional और skill courses को step-by-step समझें।</p><div class="roadmap-list"><span><i>1</i> अपनी रुचि और strengths पहचानें</span><span><i>2</i> Eligibility, fees और entrance exam जाँचें</span><span><i>3</i> Career scope और backup plan बनाएं</span></div><a class="btn btn-yellow" href="career.html">Roadmap देखें ${icon('arrow')}</a></div><div class="stack">${careers.slice(0, 3).map((item) => miniCard(item, 'compass')).join('')}</div></div></div></section>
+      <section class="section"><div class="container">${sectionHeading('Latest Posts', 'नया और परीक्षा उपयोगी', 'Career guidance, GK, maths और exam preparation के चुने हुए articles।', 'category.html')}<div class="card-grid">${posts.slice(0, 6).map(postCard).join('')}</div></div></section>
+      <section class="section section-navy" data-home-section="exams"><div class="container">${sectionHeading('Government Exams', 'तैयारी सही दिशा में शुरू करें', 'SSC, Railway, Defence और state-level exams की जरूरी जानकारी।', 'exams.html')}<div class="card-grid">${exams.map((item) => `<article class="content-card reveal" style="color:var(--ink)"><div class="card-body"><span class="eyebrow">${escapeHTML(item.exam_name)}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary)}</p><div class="card-footer"><span class="card-meta">${escapeHTML(item.important_date || '')}</span><a href="exams.html">Details →</a></div></div></article>`).join('')}</div></div></section>
+      <section class="section section-white"><div class="container">${sectionHeading('GK • GS • Maths', 'आज सीखें, रोज revise करें', 'Short concepts और smart tricks से मजबूत foundation बनाएं।', 'gk-gs.html')}<div class="card-grid">${posts.filter((p) => ['GK & GS', 'Math Tricks', 'Study Material'].includes(p.category)).slice(0, 3).map(postCard).join('')}</div></div></section>
+      <section class="section"><div class="container">${sectionHeading('Current Affairs', 'आज की महत्वपूर्ण घटनाएँ', 'राष्ट्रीय, अंतरराष्ट्रीय, खेल और विज्ञान की परीक्षा उपयोगी updates।', 'current-affairs.html')}<div class="stack">${current.slice(0, 4).map((item) => miniCard(item, 'newspaper')).join('')}</div></div></section>
+      <section class="section"><div class="container">${sectionHeading('Free Downloads', 'Notes और study material', 'Mobile-friendly resources—एक click में access करें।', 'downloads.html')}<div class="download-grid">${downloads.slice(0, 3).map(downloadCard).join('')}</div></div></section>
+      <section class="section section-white" data-home-section="quiz"><div class="container">${sectionHeading('Practice Zone', 'Featured Quiz & Mock Test', 'Timer के साथ practice करें और तुरंत score, percentage व explanation देखें।', 'quiz.html')}<div class="card-grid">${quizzes.slice(0, 3).map((quiz) => `<article class="content-card reveal"><div class="card-body"><span class="eyebrow">Quiz</span><h3>${escapeHTML(quiz.title)}</h3><p>${escapeHTML(quiz.description)}</p><div class="card-footer"><span class="card-meta">${quiz.duration_minutes || 0} min • ${formatNumber(quiz.attempts || 0)} attempts</span><a href="quiz.html">Start Quiz →</a></div></div></article>`).join('')}</div></div></section>
+      <section class="section section-white" data-home-section="videos"><div class="container">${sectionHeading('Watch & Learn', 'Latest YouTube videos', 'Shorts और video classes बिना autoplay के देखें।', 'videos.html')}<div class="video-grid">${videos.slice(0, 3).map(videoCard).join('')}</div></div></section>
+      <section class="section section-navy"><div class="container"><div class="counter-grid"><div class="counter-card reveal"><strong data-counter="${Math.max(50, posts.length * 25)}">0</strong><span>Learning Resources</span></div><div class="counter-card reveal"><strong data-counter="${Math.max(20, categories.length)}">0</strong><span>Study Categories</span></div><div class="counter-card reveal"><strong data-counter="${Math.max(500, quizzes.reduce((sum, q) => sum + Number(q.attempts || 0), 0))}">0</strong><span>Quiz Attempts</span></div><div class="counter-card reveal"><strong data-counter="100">0</strong><span>Free Learning (%)</span></div></div></div></section>
+      <section class="section"><div class="container"><div class="newsletter reveal"><div class="newsletter-inner"><div><span class="eyebrow" style="color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)">Never miss an update</span><h2>नई study updates सीधे पाएं</h2><p>Important content और new resources की जानकारी के लिए email subscribe करें।</p></div><form class="subscribe-form" id="subscribe-form"><label class="sr-only" for="subscriber-email">Email</label><input id="subscriber-email" name="email" type="email" required placeholder="आपका email address"><button class="btn btn-yellow" type="submit">Subscribe ${icon('arrow')}</button></form></div></div></div></section>`;
+    [['career',settings.show_career],['exams',settings.show_exams],['quiz',settings.show_quiz],['videos',settings.show_videos]].forEach(([name,visible]) => { if (visible === false) $(`[data-home-section="${name}"]`)?.remove(); });
+    structuredData({ '@context': 'https://schema.org', '@type': 'EducationalOrganization', name: 'Tech Study Adda', url: config.siteUrl, logo: `${config.siteUrl}/assets/images/logo.jpg`, slogan: settings.tagline, sameAs: [settings.youtube_url, settings.telegram_url] });
+  }
+
+  const careerTypes = [
+    ['10वीं के बाद क्या करें', 'Science, Commerce, Arts, Diploma, ITI और skill courses', 'graduation'],
+    ['12वीं के बाद क्या करें', 'PCM, PCB, Commerce और Arts के stream-wise options', 'compass'],
+    ['Science PCM', 'Engineering, Architecture, B.Sc, BCA, NDA और research', 'calculator'],
+    ['Science PCB', 'MBBS, BDS, AYUSH, Nursing, Pharmacy और Paramedical', 'book'],
+    ['Commerce', 'B.Com, BBA, CA, CS, CMA, Banking और Finance', 'landmark'],
+    ['Arts & Humanities', 'BA, Law, Journalism, Psychology, Design और Civil Services', 'globe'],
+    ['Diploma & ITI', 'Practical technical skills और early employment options', 'file'],
+    ['Professional Courses', 'Hotel Management, Fashion, Animation और Digital Marketing', 'spark'],
+    ['Skill Courses', 'Job-ready digital, communication और technical skills', 'target'],
+    ['Government Jobs', 'SSC, Railway, Police, Defence और state vacancies', 'shield'],
+    ['Entrance Examinations', 'JEE, NEET, CUET, NDA और professional entrances', 'quiz'],
+    ['College & Course Selection', 'Eligibility, fees, recognition, placement और scope', 'graduation']
+  ];
+
+  async function renderCareer(main, collections) {
+    pageMeta('Career Guidance', '10वीं और 12वीं के बाद courses, streams और career options की विस्तृत हिंदी जानकारी।');
+    main.innerHTML = `${pageHero('Career Guidance', 'अपनी रुचि, योग्यता और लक्ष्य के अनुसार सही course और career चुनने का practical roadmap।')}<section class="section"><div class="container">${sectionHeading('Career Explorer', 'हर विद्यार्थी के लिए सही दिशा', 'किसी विकल्प पर click करके category के related guides देखें।')}<div class="category-grid">${careerTypes.map(([title, desc, type], index) => `<a class="category-card reveal" style="--category-color:${['#7c3aed','#155eef','#0284c7','#059669','#ea580c','#db2777'][index % 6]}" href="category.html?slug=career-guidance"><span class="category-icon">${icon(type)}</span><h3>${title}</h3><p>${desc}</p></a>`).join('')}</div></div></section><section class="section section-white"><div class="container">${sectionHeading('Detailed Guides', 'Eligibility से career scope तक', 'हर guide में course duration, entrance exam और आगे के अवसर।')}<div class="card-grid">${collections.careers.map((guide) => `<article class="content-card reveal"><div class="card-body"><span class="eyebrow">${escapeHTML(guide.category)}</span><h3>${escapeHTML(guide.title)}</h3><p>${escapeHTML(guide.summary)}</p><div class="roadmap-list" style="margin-bottom:0"><span><i>✓</i> Eligibility: ${escapeHTML(guide.eligibility)}</span><span><i>✓</i> Duration: ${escapeHTML(guide.duration)}</span><span><i>✓</i> Entrance: ${escapeHTML(guide.entrance_exam)}</span><span><i>✓</i> Scope: ${escapeHTML(guide.career_scope)}</span></div></div></article>`).join('')}</div></div></section><section class="section"><div class="container"><div class="newsletter reveal"><div class="newsletter-inner"><div><h2>Career चुनने से पहले 4 checks</h2><p>रुचि • Eligibility • Fees • Placement • Career Scope और official recognition जरूर जाँचें।</p></div><a class="btn btn-yellow" href="contact.html">अपना सवाल पूछें ${icon('arrow')}</a></div></div></div></section>`;
+  }
+
+  async function renderCollection(main, collections) {
+    const definitions = {
+      exams: { title: 'Government Exams', desc: 'SSC, Railway, Defence, Police और अन्य सरकारी परीक्षाओं की तैयारी व updates।', source: collections.exams, type: 'exams' },
+      'gk-gs': { title: 'GK & General Studies', desc: 'Competitive exams के लिए General Knowledge, General Studies और Static GK।', source: collections.posts.filter((p) => p.category === 'GK & GS'), type: 'posts' },
+      'current-affairs': { title: 'Current Affairs', desc: 'राष्ट्रीय, अंतरराष्ट्रीय, खेल, विज्ञान और परीक्षा उपयोगी daily updates।', source: collections.current, type: 'current' },
+      math: { title: 'Math Formula & Tricks', desc: 'गणित के जरूरी formula, shortcut methods और practice tips।', source: collections.posts.filter((p) => p.category === 'Math Tricks'), type: 'posts' },
+      'study-material': { title: 'Free Study Material', desc: 'Notes, syllabus, previous-year questions, formula sheets और career guides।', source: collections.downloads, type: 'downloads' },
+      videos: { title: 'YouTube Videos', desc: 'Tech Study Adda के latest educational videos और Shorts।', source: collections.videos, type: 'videos' },
+      downloads: { title: 'Downloads', desc: 'Free PDFs, notes, syllabus और formula sheets—साफ details के साथ।', source: collections.downloads, type: 'downloads' }
+    };
+    const def = definitions[page];
+    pageMeta(def.title, def.desc);
+    main.innerHTML = `${pageHero(def.title, def.desc)}<section class="section"><div class="container"><div class="filter-bar reveal"><div class="search-field">${icon('search')}<input id="collection-search" type="search" placeholder="इस page में खोजें…" aria-label="Search this page"></div><select id="collection-sort" aria-label="Sort content"><option value="newest">Newest</option><option value="popular">Popular</option><option value="az">A–Z</option></select></div><div id="collection-results"></div></div></section>`;
+    const results = $('#collection-results');
+    const input = $('#collection-search');
+    const sort = $('#collection-sort');
+    const render = () => {
+      const query = input.value.trim().toLowerCase();
+      let items = [...def.source].filter((item) => [item.title, item.summary, item.description, item.category, item.exam_name].some((value) => String(value || '').toLowerCase().includes(query)));
+      if (sort.value === 'popular') items.sort((a, b) => Number(b.views || b.download_count || b.attempts || 0) - Number(a.views || a.download_count || a.attempts || 0));
+      if (sort.value === 'az') items.sort((a, b) => String(a.title).localeCompare(String(b.title)));
+      if (sort.value === 'newest') items.sort((a, b) => String(b.published_at || '').localeCompare(String(a.published_at || '')));
+      if (!items.length) { results.innerHTML = `<div class="empty-state">${icon('search')}<h3>कोई परिणाम नहीं मिला</h3><p>अलग keyword से दोबारा खोजें।</p></div>`; return; }
+      if (def.type === 'downloads') results.innerHTML = `<div class="download-grid">${items.map(downloadCard).join('')}</div>`;
+      else if (def.type === 'videos') results.innerHTML = `<div class="video-grid">${items.map(videoCard).join('')}</div>`;
+      else if (def.type === 'posts') results.innerHTML = `<div class="card-grid">${items.map(postCard).join('')}</div>`;
+      else results.innerHTML = `<div class="card-grid">${items.map((item) => `<article class="content-card reveal"><div class="card-body"><span class="eyebrow">${escapeHTML(item.exam_name || item.type || 'Update')}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary || '')}</p><div class="card-footer"><span class="card-meta">${formatDate(item.published_at)}</span><a href="contact.html">जानकारी पूछें →</a></div></div></article>`).join('')}</div>`;
+      wireDynamicActions(results); observeReveal();
+    };
+    input.addEventListener('input', render); sort.addEventListener('change', render); render();
+  }
+
+  async function renderCategory(main, collections) {
+    const slug = getParam('slug');
+    if (!slug) {
+      pageMeta('All Categories', 'Tech Study Adda की सभी educational categories।');
+      main.innerHTML = `${pageHero('सभी Categories', 'Career, exams, GK, maths, current affairs, study material और quizzes।')}<section class="section"><div class="container"><div class="category-grid">${collections.categories.map(categoryCard).join('')}</div></div></section>`;
+      return;
+    }
+    const category = collections.categories.find((item) => item.slug === slug);
+    if (!category) return renderNotFound(main, 'Category नहीं मिली');
+    let items = collections.posts.filter((item) => item.category_id === category.id || item.category === category.name);
+    pageMeta(category.name_hi || category.name, category.description || `${category.name} resources`);
+    main.innerHTML = `${pageHero(category.name_hi || category.name, category.description || 'Latest learning resources', category.name_hi || category.name)}<section class="section"><div class="container"><div class="filter-bar"><div class="search-field">${icon('search')}<input id="category-search" type="search" placeholder="${escapeHTML(category.name)} में खोजें…"></div></div><div class="card-grid" id="category-results">${items.length ? items.map(postCard).join('') : `<div class="empty-state"><h3>Content जल्द आ रहा है</h3><p>इस dynamic category में admin panel से नया content publish किया जा सकता है।</p></div>`}</div></div></section>`;
+    $('#category-search').addEventListener('input', (event) => {
+      const query = event.target.value.toLowerCase();
+      const filtered = items.filter((item) => `${item.title} ${item.summary} ${(item.tags || []).join(' ')}`.toLowerCase().includes(query));
+      $('#category-results').innerHTML = filtered.length ? filtered.map(postCard).join('') : '<div class="empty-state">कोई matching post नहीं मिली।</div>';
+      observeReveal();
+    });
+  }
+
+  async function renderPost(main, collections) {
+    const slug = getParam('slug');
+    const post = collections.posts.find((item) => item.slug === slug);
+    if (!post) return renderNotFound(main, 'यह article उपलब्ध नहीं है');
+    const related = collections.posts.filter((item) => item.id !== post.id && (item.category_id === post.category_id || item.tags?.some((tag) => post.tags?.includes(tag)))).slice(0, 4);
+    const index = collections.posts.findIndex((item) => item.id === post.id);
+    const previous = collections.posts[index + 1];
+    const next = collections.posts[index - 1];
+    pageMeta(post.title, post.summary, `/post.html?slug=${encodeURIComponent(post.slug)}`);
+    main.innerHTML = `${pageHero(post.category || 'Article', post.summary, post.category || 'Article')}<section class="section"><div class="container article-layout"><article class="article"><h1>${escapeHTML(post.title)}</h1><div class="article-meta"><span>${icon('book')} ${escapeHTML(post.category)}</span><span>${icon('clock')} ${escapeHTML(post.reading_time || 4)} min read</span><span>${icon('eye')} ${formatNumber(post.views || 0)} views</span><span>${formatDate(post.published_at)}</span></div>${post.featured_image ? `<figure class="article-cover"><img src="${escapeHTML(post.featured_image)}" width="900" height="506" alt="${escapeHTML(post.title)}"></figure>` : ''}<div class="article-content">${sanitizeHTML(post.content)}</div><div class="info-box"><strong>महत्वपूर्ण:</strong> Admission, exam date या eligibility से जुड़ी final जानकारी हमेशा संबंधित official website/notification से verify करें।</div><div class="share-row"><strong>Share:</strong><button class="btn btn-outline btn-sm share-page">${icon('share')} Share article</button><a class="btn btn-primary btn-sm" href="downloads.html">${icon('download')} Downloads</a></div><div class="card-footer" style="margin-top:24px">${previous ? `<a href="post.html?slug=${encodeURIComponent(previous.slug)}">← Previous</a>` : '<span></span>'}${next ? `<a href="post.html?slug=${encodeURIComponent(next.slug)}">Next →</a>` : '<span></span>'}</div></article><aside class="article-sidebar"><div class="sidebar-card"><h3>YouTube पर जुड़ें</h3><p style="color:var(--muted);font-size:.82rem">Video classes, Shorts और नई career series देखें।</p><a class="btn btn-youtube" style="width:100%" href="${escapeHTML(settings.youtube_url)}" target="_blank" rel="noopener">${icon('youtube')} Subscribe</a></div><div class="sidebar-card"><h3>Telegram Updates</h3><p style="color:var(--muted);font-size:.82rem">Notes और महत्वपूर्ण update notification पाएं।</p><a class="btn btn-telegram" style="width:100%" href="${escapeHTML(settings.telegram_url)}" target="_blank" rel="noopener">${icon('telegram')} Join करें</a></div><div class="sidebar-card"><h3>Related Posts</h3><div class="side-links">${related.length ? related.map((item) => `<a href="post.html?slug=${encodeURIComponent(item.slug)}">${escapeHTML(item.title)}</a>`).join('') : '<span style="color:var(--muted)">जल्द जोड़ी जाएंगी।</span>'}</div></div></aside></div></section>`;
+    structuredData({ '@context': 'https://schema.org', '@type': 'Article', headline: post.title, description: post.summary, datePublished: post.published_at, author: { '@type': 'Organization', name: post.author || 'Tech Study Adda' }, publisher: { '@type': 'EducationalOrganization', name: 'Tech Study Adda' }, mainEntityOfPage: location.href });
+    store.incrementCounter('posts', post.id, 'views').catch(() => {});
+  }
+
+  async function renderQuiz(main, collections) {
+    const quiz = collections.quizzes[0];
+    const questions = collections.questions.filter((item) => item.quiz_id === quiz?.id).sort((a, b) => a.display_order - b.display_order);
+    pageMeta('Quiz & Mock Test', 'Free mobile-friendly quiz, instant score और answer explanations।');
+    main.innerHTML = `${pageHero('Quiz & Mock Test', 'Practice करें, तुरंत score देखें और हर answer की explanation से सीखें।')}<section class="section"><div class="container quiz-shell" id="quiz-shell"><div class="quiz-card"><div class="quiz-header"><span class="eyebrow" style="color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)">Featured Quiz</span><h2>${escapeHTML(quiz?.title || 'Quiz जल्द उपलब्ध')}</h2><p style="margin:0;color:#dce9ff">${escapeHTML(quiz?.description || '')}</p></div><div class="quiz-body" style="text-align:center"><div class="category-icon" style="--category-color:var(--blue-600);margin:0 auto 20px;width:68px;height:68px">${icon('quiz')}</div><h3>${questions.length} Questions • ${quiz?.duration_minutes || 5} Minutes</h3><p style="color:var(--muted)">हर प्रश्न का एक सही answer है। Quiz submit करने पर score, percentage और explanations मिलेंगी।</p><button class="btn btn-primary" id="start-quiz">Quiz शुरू करें ${icon('arrow')}</button></div></div></div></section>`;
+    if (!quiz || !questions.length) return;
+    $('#start-quiz').addEventListener('click', () => startQuiz(quiz, questions));
+  }
+
+  function startQuiz(quiz, questions) {
+    let current = 0;
+    const answers = Array(questions.length).fill(null);
+    let remaining = Number(quiz.duration_minutes || 0) * 60;
+    const shell = $('#quiz-shell');
+    const draw = () => {
+      const question = questions[current];
+      shell.innerHTML = `<div class="quiz-card"><div class="quiz-header"><div class="quiz-progress-top"><strong>Question ${current + 1} / ${questions.length}</strong><span id="quiz-timer">${remaining ? formatTime(remaining) : 'No timer'}</span></div><div class="progress-bar"><span style="width:${((current + 1) / questions.length) * 100}%"></span></div></div><div class="quiz-body"><h2 class="question-title">${escapeHTML(question.question)}</h2><div class="options">${question.options.map((option, index) => `<label class="option ${answers[current] === index ? 'selected' : ''}"><input type="radio" name="answer" value="${index}" ${answers[current] === index ? 'checked' : ''}><span><strong>${String.fromCharCode(65 + index)}.</strong> ${escapeHTML(option)}</span></label>`).join('')}</div><div class="quiz-controls"><button class="btn btn-outline" id="prev-question" ${current === 0 ? 'disabled' : ''}>← Previous</button>${current === questions.length - 1 ? '<button class="btn btn-primary" id="submit-quiz">Result देखें</button>' : `<button class="btn btn-primary" id="next-question">Next ${icon('arrow')}</button>`}</div><div class="question-pills">${questions.map((_, index) => `<button class="question-pill ${answers[index] !== null ? 'answered' : ''} ${index === current ? 'current' : ''}" data-question="${index}" aria-label="Go to question ${index + 1}">${index + 1}</button>`).join('')}</div></div></div>`;
+      $$('.option', shell).forEach((option) => option.addEventListener('click', () => { answers[current] = Number($('input', option).value); draw(); }));
+      $('#prev-question')?.addEventListener('click', () => { current -= 1; draw(); });
+      $('#next-question')?.addEventListener('click', () => { current += 1; draw(); });
+      $('#submit-quiz')?.addEventListener('click', showResult);
+      $$('.question-pill', shell).forEach((pill) => pill.addEventListener('click', () => { current = Number(pill.dataset.question); draw(); }));
+    };
+    const timer = remaining ? setInterval(() => {
+      remaining -= 1;
+      const element = $('#quiz-timer');
+      if (element) element.textContent = formatTime(remaining);
+      if (remaining <= 0) { clearInterval(timer); showResult(); }
+    }, 1000) : null;
+    const showResult = () => {
+      if (timer) clearInterval(timer);
+      const correct = questions.reduce((score, question, index) => score + (answers[index] === Number(question.correct_answer) ? 1 : 0), 0);
+      const percentage = Math.round((correct / questions.length) * 100);
+      store.incrementCounter('quizzes', quiz.id, 'attempts').catch(() => {});
+      shell.innerHTML = `<div class="quiz-card"><div class="quiz-header" style="text-align:center"><h2>Quiz Result</h2><p style="margin:0;color:#dce9ff">${percentage >= 70 ? 'बहुत बढ़िया! तैयारी जारी रखें।' : 'अच्छी कोशिश—explanations पढ़कर दोबारा try करें।'}</p></div><div class="quiz-body"><div class="result-ring" style="--score:${percentage}%"><strong>${percentage}%</strong></div><h3 style="text-align:center">${correct} सही • ${questions.length - correct} गलत • ${answers.filter((v) => v === null).length} छोड़े</h3><div class="quiz-controls" style="justify-content:center"><button class="btn btn-primary" id="retry-quiz">Retry Quiz</button><button class="btn btn-outline share-result">${icon('share')} Share Result</button></div><div class="answer-review">${questions.map((question, index) => { const isCorrect = answers[index] === Number(question.correct_answer); return `<div class="review-item ${isCorrect ? 'correct' : ''}"><strong>${index + 1}. ${escapeHTML(question.question)} — ${isCorrect ? '✓ सही' : '✕ गलत'}</strong><p>सही उत्तर: ${escapeHTML(question.options[Number(question.correct_answer)])}<br>${escapeHTML(question.explanation || '')}</p></div>`; }).join('')}</div></div></div>`;
+      $('#retry-quiz').addEventListener('click', () => startQuiz(quiz, questions));
+      $('.share-result').addEventListener('click', () => shareText(`मैंने Tech Study Adda के ${quiz.title} में ${percentage}% score किया।`, location.href));
+    };
+    draw();
+  }
+
+  const formatTime = (seconds) => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+
+  function renderAbout(main) {
+    pageMeta('About Us', 'Tech Study Adda का mission, values और educational vision।');
+    main.innerHTML = `${pageHero('About Tech Study Adda', 'Learn Today, Achieve Tomorrow—हर विद्यार्थी तक आसान और उपयोगी शिक्षा पहुँचाने की कोशिश।')}<section class="section"><div class="container"><div class="split-grid"><div class="feature-panel reveal"><span class="eyebrow">Our Mission</span><h2>सही जानकारी से सही निर्णय</h2><p>Tech Study Adda विद्यार्थियों को career guidance, competitive exam preparation और free learning resources हिंदी में सरल तरीके से देता है।</p><div class="roadmap-list"><span><i>✓</i> सरल, स्पष्ट और student-first content</span><span><i>✓</i> Career और exam information एक जगह</span><span><i>✓</i> Free quizzes, notes और video guidance</span></div></div><div class="stack"><div class="mini-card reveal"><span class="mini-card-icon">${icon('target')}</span><span><h3>हमारा उद्देश्य</h3><p>Confusion कम करके learning और career planning को practical बनाना।</p></span></div><div class="mini-card reveal"><span class="mini-card-icon">${icon('users')}</span><span><h3>किसके लिए</h3><p>School students, college learners और competitive exam aspirants.</p></span></div><div class="mini-card reveal"><span class="mini-card-icon">${icon('check')}</span><span><h3>हमारा वादा</h3><p>उपयोगी जानकारी, clear language और लगातार बेहतर resources.</p></span></div></div></div></div></section>`;
+  }
+
+  function renderContact(main) {
+    pageMeta('Contact Us', 'Tech Study Adda से सवाल, feedback या collaboration के लिए संपर्क करें।');
+    main.innerHTML = `${pageHero('Contact Us', 'Career, study resources या website से जुड़ा सवाल भेजें—हम जल्द जवाब देने की कोशिश करेंगे।')}<section class="section"><div class="container contact-grid"><div class="form-panel"><h2>Message भेजें</h2><p style="color:var(--muted)">सभी fields सही भरें। Spam रोकने के लिए hidden honeypot enabled है।</p><form id="contact-form" class="form-grid"><div class="form-group"><label for="name">नाम *</label><input class="field" id="name" name="name" minlength="2" maxlength="80" required></div><div class="form-group"><label for="email">Email *</label><input class="field" id="email" name="email" type="email" maxlength="120" required></div><div class="form-group"><label for="mobile">Mobile number</label><input class="field" id="mobile" name="mobile" inputmode="numeric" pattern="[0-9 +()-]{7,16}" maxlength="16"></div><div class="form-group"><label for="subject">Subject *</label><input class="field" id="subject" name="subject" minlength="3" maxlength="140" required></div><div class="form-group full"><label for="message">Message *</label><textarea class="field" id="message" name="message" minlength="10" maxlength="2000" required></textarea></div><div class="sr-only" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div><div class="form-group full"><button class="btn btn-primary" type="submit">${icon('mail')} Message भेजें</button></div></form></div><aside class="info-panel"><h2>हमसे जुड़ें</h2><div class="contact-item"><span class="category-icon">${icon('mail')}</span><div><strong>Email</strong><a href="mailto:${escapeHTML(settings.contact_email)}">${escapeHTML(settings.contact_email)}</a></div></div><div class="contact-item"><span class="category-icon">${icon('youtube')}</span><div><strong>YouTube</strong><a href="${escapeHTML(settings.youtube_url)}" target="_blank" rel="noopener">@techstudyadda</a></div></div><div class="contact-item"><span class="category-icon">${icon('telegram')}</span><div><strong>Telegram</strong><a href="${escapeHTML(settings.telegram_url)}" target="_blank" rel="noopener">@Techstudyadda</a></div></div><div class="info-box"><strong>ध्यान दें:</strong> Tech Study Adda किसी job या admission की guarantee नहीं देता। Official information संबंधित authority से verify करें।</div></aside></div></section>`;
+    $('#contact-form').addEventListener('submit', handleContact);
+  }
+
+  async function handleContact(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+    const payload = Object.fromEntries(new FormData(form));
+    if (payload.website) return;
+    const button = $('button[type="submit"]', form);
+    button.disabled = true; button.textContent = 'भेजा जा रहा है…';
+    try {
+      await store.upsert('contact_messages', { name: payload.name.trim(), email: payload.email.trim().toLowerCase(), mobile: payload.mobile.trim(), subject: payload.subject.trim(), message: payload.message.trim(), status: 'unread' });
+      form.reset(); toast('आपका message सुरक्षित रूप से मिल गया।');
+    } catch (_) { toast('Message नहीं भेजा जा सका। कृपया बाद में try करें।', 'error'); }
+    finally { button.disabled = false; button.innerHTML = `${icon('mail')} Message भेजें`; }
+  }
+
+  function renderLegal(main, type) {
+    const legal = {
+      privacy: ['Privacy Policy', '<p>Tech Study Adda आपकी privacy का सम्मान करता है। Contact या subscription form से प्राप्त जानकारी केवल आपके प्रश्न का उत्तर देने और educational updates भेजने के लिए उपयोग की जाती है।</p><h2>हम कौन-सा data लेते हैं</h2><ul><li>नाम, email, mobile और message—केवल जब आप स्वयं form भरते हैं।</li><li>Basic usage data hosting/analytics provider द्वारा process हो सकता है।</li></ul><h2>Data security</h2><p>Production setup में data Supabase Row Level Security policies के साथ store होता है। Service-role key frontend में कभी उपयोग नहीं की जाती।</p><h2>आपके अधिकार</h2><p>अपने data की correction या deletion के लिए techstudyadda@gmail.com पर संपर्क करें।</p>'],
+      terms: ['Terms & Conditions', '<p>इस website का उपयोग करके आप इन terms से सहमत होते हैं। Content educational purpose के लिए है और बिना अनुमति bulk copy या misuse नहीं किया जा सकता।</p><h2>Educational use</h2><p>हम जानकारी को उपयोगी और सही रखने का प्रयास करते हैं, लेकिन exam, admission या vacancy की final authority संबंधित official notification है।</p><h2>Acceptable use</h2><ul><li>Website security को bypass करने की कोशिश न करें।</li><li>Forms में false, abusive या automated spam न भेजें।</li><li>Downloads का lawful personal educational use करें।</li></ul>'],
+      disclaimer: ['Disclaimer', '<p>Tech Study Adda एक independent educational platform है। हम किसी government department, examination board, college या recruitment agency का official प्रतिनिधित्व नहीं करते।</p><h2>No guarantee</h2><p>हम नौकरी, admission, rank या exam success की guarantee नहीं देते। Dates, eligibility, fees और rules बदल सकते हैं; कार्रवाई से पहले official source जाँचें।</p><h2>External links</h2><p>YouTube, Telegram और अन्य external websites की content/privacy practices उनके अपने नियंत्रण में हैं।</p>']
+    }[type];
+    pageMeta(legal[0], `${legal[0]} — Tech Study Adda`);
+    main.innerHTML = `${pageHero(legal[0], 'यह page Tech Study Adda के उपयोग और जानकारी से जुड़ी महत्वपूर्ण शर्तें बताता है।')}<section class="section"><div class="container"><article class="legal"><p><strong>Last updated:</strong> 15 September 2026</p>${legal[1]}<h2>Contact</h2><p>किसी प्रश्न के लिए <a style="color:var(--blue-600)" href="mailto:${escapeHTML(settings.contact_email)}">${escapeHTML(settings.contact_email)}</a> पर लिखें।</p></article></div></section>`;
+  }
+
+  function renderNotFound(main, message = 'Page नहीं मिला') {
+    pageMeta('404 — Page Not Found', 'Requested page could not be found.');
+    main.innerHTML = `<section class="section" style="min-height:65vh;display:grid;place-items:center"><div class="empty-state" style="max-width:650px;margin:auto"><span style="font-size:5rem;font-weight:800;color:var(--blue-600)">404</span><h1>${escapeHTML(message)}</h1><p>Link बदल गया हो सकता है या content अभी publish नहीं हुआ है।</p><a class="btn btn-primary" href="index.html">${icon('home')} Home पर जाएँ</a></div></section>`;
+  }
+
+  function searchIndex(collections) {
+    allSearchItems = [
+      ...collections.posts.map((item) => ({ ...item, type: 'Post', href: `post.html?slug=${item.slug}` })),
+      ...collections.categories.map((item) => ({ title: item.name_hi || item.name, summary: item.description, type: 'Category', href: `category.html?slug=${item.slug}`, keywords: item.name })),
+      ...collections.exams.map((item) => ({ ...item, type: 'Exam', href: 'exams.html' })),
+      ...collections.downloads.map((item) => ({ ...item, type: 'Download', href: 'downloads.html' })),
+      ...collections.videos.map((item) => ({ ...item, type: 'Video', href: 'videos.html' }))
+    ];
+  }
+
+  function wireShell() {
+    const themeButton = $('#theme-toggle');
+    const setThemeIcon = () => { const dark = document.documentElement.dataset.theme === 'dark'; themeButton.innerHTML = icon(dark ? 'sun' : 'moon'); themeButton.setAttribute('aria-label', dark ? 'Light mode' : 'Dark mode'); };
+    setThemeIcon();
+    themeButton.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('tsa_theme', next);
+      setThemeIcon();
+    });
+    $('#menu-toggle').addEventListener('click', (event) => {
+      const open = $('#site-nav').classList.toggle('open');
+      event.currentTarget.setAttribute('aria-expanded', open);
+      event.currentTarget.innerHTML = icon(open ? 'close' : 'menu');
+    });
+    addEventListener('scroll', () => $('#site-header').classList.toggle('scrolled', scrollY > 12), { passive: true });
+    const searchModal = $('#search-modal');
+    $('#search-open').addEventListener('click', () => { searchModal.showModal(); setTimeout(() => $('#global-search').focus(), 40); });
+    $$('.modal-close').forEach((button) => button.addEventListener('click', () => {
+      const dialog = button.closest('dialog');
+      if (dialog.id === 'video-modal') $('#video-embed').innerHTML = '';
+      dialog.close();
+    }));
+    $$('dialog').forEach((dialog) => dialog.addEventListener('click', (event) => { if (event.target === dialog) { if (dialog.id === 'video-modal') $('#video-embed').innerHTML = ''; dialog.close(); } }));
+    $('#global-search').addEventListener('input', renderSearchResults);
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href]');
+      if (!link || link.target || link.href.startsWith('mailto:') || link.origin !== location.origin || link.hash) return;
+      event.preventDefault(); document.body.classList.add('page-leaving'); setTimeout(() => { location.href = link.href; }, 160);
+    });
+  }
+
+  function renderSearchResults(event) {
+    const term = event.target.value.trim().toLowerCase();
+    const results = $('#search-results');
+    if (term.length < 2) { results.innerHTML = '<div class="empty-state">खोज शुरू करने के लिए कम-से-कम 2 अक्षर लिखें।</div>'; return; }
+    const matches = allSearchItems.filter((item) => `${item.title || item.name || ''} ${item.summary || item.description || ''} ${item.category || ''} ${item.exam_name || ''} ${(item.tags || []).join(' ')} ${item.keywords || ''}`.toLowerCase().includes(term)).slice(0, 12);
+    results.innerHTML = matches.length ? matches.map((item) => `<a class="search-result" href="${escapeHTML(item.href)}"><strong>${escapeHTML(item.title || item.name)}</strong><small>${escapeHTML(item.type)} • ${escapeHTML(item.summary || item.description || '')}</small></a>`).join('') : '<div class="empty-state">कोई matching content नहीं मिला।</div>';
+  }
+
+  function observeReveal() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { $$('.reveal').forEach((el) => el.classList.add('visible')); return; }
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }), { threshold: .08 });
+    $$('.reveal:not(.visible)').forEach((element) => observer.observe(element));
+  }
+
+  function animateCounters() {
+    const counters = $$('[data-counter]');
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const element = entry.target; const target = Number(element.dataset.counter); const start = performance.now();
+      const tick = (now) => { const progress = Math.min((now - start) / 1200, 1); element.textContent = formatNumber(Math.round(target * (1 - Math.pow(1 - progress, 3)))) + (target === 100 ? '%' : '+'); if (progress < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick); observer.unobserve(element);
+    }), { threshold: .6 });
+    counters.forEach((counter) => observer.observe(counter));
+  }
+
+  function wireDynamicActions(scope = document) {
+    $$('.play-video', scope).forEach((button) => button.addEventListener('click', () => {
+      const id = button.dataset.videoId;
+      if (!id) return toast('Video ID सही नहीं है।', 'error');
+      $('#video-modal-title').textContent = button.dataset.title;
+      $('#video-embed').innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}" title="${escapeHTML(button.dataset.title)}" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+      $('#video-modal').showModal();
+    }));
+    $$('.download-file', scope).forEach((button) => button.addEventListener('click', () => {
+      const item = { id: button.dataset.id, title: button.dataset.title, slug: button.dataset.slug, description: button.dataset.description, file_url: button.dataset.fileUrl };
+      store.incrementCounter('downloads', item.id, 'download_count').catch(() => {});
+      const link = document.createElement('a');
+      if (item.file_url && item.file_url !== '#') { link.href = item.file_url; link.target = '_blank'; link.rel = 'noopener'; }
+      else {
+        const content = `TECH STUDY ADDA\n${item.title}\n\n${item.description}\n\nDemo resource: Production में admin panel से original PDF upload/link करें।\n${settings.tagline}`;
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        link.href = URL.createObjectURL(blob); link.download = `${item.slug || 'tech-study-adda-resource'}.txt`; setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      }
+      document.body.append(link); link.click(); link.remove();
+      toast('Download शुरू हो गया।');
+    }));
+  }
+
+  async function shareText(text, url) {
+    try { if (navigator.share) await navigator.share({ title: 'Tech Study Adda', text, url }); else { await navigator.clipboard.writeText(`${text} ${url}`); toast('Share link copy हो गया।'); } }
+    catch (error) { if (error.name !== 'AbortError') toast('Share नहीं हो सका।', 'error'); }
+  }
+
+  function toast(message, type = 'success') {
+    const element = document.createElement('div');
+    element.className = `toast ${type}`; element.textContent = message;
+    $('#toast-region')?.append(element);
+    setTimeout(() => element.remove(), 4200);
+  }
+
+  async function handleSubscribe(event) {
+    event.preventDefault();
+    const input = $('input[type="email"]', event.currentTarget);
+    if (!input.reportValidity()) return;
+    const button = $('button', event.currentTarget); button.disabled = true;
+    try { await store.upsert('subscribers', { email: input.value.trim().toLowerCase(), status: 'active' }); input.value = ''; toast('Subscription सफल रहा। धन्यवाद!'); }
+    catch (_) { toast('Email subscribe नहीं हो सका।', 'error'); }
+    finally { button.disabled = false; }
+  }
+
+  async function init() {
+    const savedTheme = localStorage.getItem('tsa_theme');
+    if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+    else if (matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.dataset.theme = 'dark';
+    await Promise.all([store.ready, loadDOMPurify()]);
+    await loadSettings();
+    if (settings.primary_color) document.documentElement.style.setProperty('--blue-600', settings.primary_color);
+    if (settings.accent_color) document.documentElement.style.setProperty('--yellow-400', settings.accent_color);
+    if (settings.favicon_url) $('link[rel="icon"]')?.setAttribute('href', settings.favicon_url);
+    const [categories, posts, careers, exams, current, downloads, videos, quizzes, questions, notices] = await Promise.all([
+      list('categories'), list('posts'), list('career_guides'), list('exam_updates'), list('current_affairs'), list('downloads'), list('videos'), list('quizzes'), list('quiz_questions'), list('notices')
+    ]);
+    const collections = {
+      categories: categories.filter((item) => item.enabled !== false).sort((a, b) => Number(a.display_order || 0) - Number(b.display_order || 0)),
+      posts: published(posts).sort((a, b) => String(b.published_at || '').localeCompare(String(a.published_at || ''))),
+      careers: published(careers), exams: published(exams), current: published(current), downloads: published(downloads), videos: published(videos), quizzes: published(quizzes), questions,
+      notices: notices.filter((item) => item.active !== false).sort((a, b) => Number(a.display_order || 0) - Number(b.display_order || 0))
+    };
+    document.body.insertAdjacentHTML('afterbegin', headerTemplate());
+    document.body.insertAdjacentHTML('beforeend', footerTemplate(collections.categories));
+    const main = $('#main-content');
+    searchIndex(collections);
+    if (settings.maintenance_mode && getParam('preview') !== '1') {
+      main.innerHTML = `${pageHero('Website Maintenance', 'हम website को बेहतर बना रहे हैं। कृपया कुछ समय बाद दोबारा आएँ।')}<section class="section"><div class="container"><div class="empty-state"><h2>जल्द वापस मिलेंगे</h2><p>Updates के लिए हमारे YouTube और Telegram channel से जुड़ें।</p><a class="btn btn-youtube" href="${escapeHTML(settings.youtube_url)}" target="_blank" rel="noopener">${icon('youtube')} YouTube</a></div></div></section>`;
+      wireShell(); observeReveal(); document.body.classList.remove('is-loading'); return;
+    }
+    const renderers = {
+      home: renderHome, career: renderCareer, exams: renderCollection, 'gk-gs': renderCollection, 'current-affairs': renderCollection,
+      math: renderCollection, 'study-material': renderCollection, videos: renderCollection, downloads: renderCollection, category: renderCategory, post: renderPost,
+      quiz: renderQuiz, about: renderAbout, contact: renderContact,
+      privacy: (target) => renderLegal(target, 'privacy'), terms: (target) => renderLegal(target, 'terms'), disclaimer: (target) => renderLegal(target, 'disclaimer'), 'not-found': renderNotFound
+    };
+    await (renderers[page] || renderNotFound)(main, collections);
+    wireShell(); wireDynamicActions(); observeReveal(); animateCounters();
+    $('#subscribe-form')?.addEventListener('submit', handleSubscribe);
+    $('.share-page')?.addEventListener('click', () => shareText(document.title, location.href));
+    document.body.classList.remove('is-loading');
+    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();

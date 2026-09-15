@@ -1,0 +1,100 @@
+window.TSA_DEMO_DATA = {
+  settings: {
+    id: 'site-settings',
+    website_name: 'Tech Study Adda',
+    tagline: 'Learn Today, Achieve Tomorrow',
+    hero_heading: 'पढ़ाई आसान, सफलता आपके पास',
+    hero_description: 'Career guidance, competitive exam preparation और free study resources—अब एक ही भरोसेमंद जगह पर।',
+    announcement: 'नई शुरुआत: Career Guidance Series अब Tech Study Adda पर उपलब्ध है।',
+    maintenance_mode: false,
+    primary_color: '#155eef',
+    accent_color: '#ffd633',
+    youtube_url: 'https://www.youtube.com/@techstudyadda',
+    telegram_url: 'https://t.me/Techstudyadda',
+    contact_email: 'techstudyadda@gmail.com',
+    show_career: true,
+    show_exams: true,
+    show_quiz: true,
+    show_videos: true,
+    robots_index: true
+  },
+  categories: [
+    { id: 'cat-career', name: 'Career Guidance', name_hi: 'करियर गाइडेंस', slug: 'career-guidance', icon: 'compass', color: '#7c3aed', description: '10वीं और 12वीं के बाद सही course और career चुनें।', display_order: 1, enabled: true },
+    { id: 'cat-jobs', name: 'Government Exams', name_hi: 'सरकारी परीक्षाएँ', slug: 'government-exams', icon: 'landmark', color: '#ef4444', description: 'SSC, Railway, Defence और State Exams की तैयारी।', display_order: 2, enabled: true },
+    { id: 'cat-gk', name: 'GK & GS', name_hi: 'जीके एवं जीएस', slug: 'gk-gs', icon: 'globe', color: '#059669', description: 'महत्वपूर्ण General Knowledge और General Studies।', display_order: 3, enabled: true },
+    { id: 'cat-current', name: 'Current Affairs', name_hi: 'करंट अफेयर्स', slug: 'current-affairs', icon: 'newspaper', color: '#ea580c', description: 'परीक्षा उपयोगी राष्ट्रीय और अंतरराष्ट्रीय घटनाएँ।', display_order: 4, enabled: true },
+    { id: 'cat-math', name: 'Math Tricks', name_hi: 'गणित ट्रिक्स', slug: 'math-tricks', icon: 'calculator', color: '#0284c7', description: 'Formula, shortcut और आसान हल।', display_order: 5, enabled: true },
+    { id: 'cat-study', name: 'Study Material', name_hi: 'स्टडी मटेरियल', slug: 'study-material', icon: 'book', color: '#db2777', description: 'Free notes, syllabus और previous year papers।', display_order: 6, enabled: true },
+    { id: 'cat-quiz', name: 'Quiz & Mock Test', name_hi: 'क्विज़ एवं मॉक टेस्ट', slug: 'quiz', icon: 'quiz', color: '#0891b2', description: 'Practice करें और तुरंत अपना score जानें।', display_order: 7, enabled: true },
+    { id: 'cat-video', name: 'Video Classes', name_hi: 'वीडियो क्लास', slug: 'videos', icon: 'play', color: '#dc2626', description: 'Tech Study Adda के latest classes और Shorts।', display_order: 8, enabled: true },
+    { id: 'cat-ssc', name: 'SSC', name_hi: 'एसएससी', slug: 'ssc', icon: 'file', color: '#4f46e5', description: 'SSC exam updates, syllabus और practice sets।', display_order: 9, enabled: true },
+    { id: 'cat-railway', name: 'Railway', name_hi: 'रेलवे', slug: 'railway', icon: 'train', color: '#0f766e', description: 'RRB examinations के लिए useful resources।', display_order: 10, enabled: true },
+    { id: 'cat-defence', name: 'Defence', name_hi: 'डिफेन्स', slug: 'defence', icon: 'shield', color: '#475569', description: 'NDA, Air Force और Defence career updates।', display_order: 11, enabled: true },
+    { id: 'cat-admission', name: 'Admission', name_hi: 'एडमिशन', slug: 'admission', icon: 'graduation', color: '#9333ea', description: 'Entrance, admission और college selection updates।', display_order: 12, enabled: true },
+    { id: 'cat-10th', name: 'After Class 10', name_hi: '10वीं के बाद क्या करें', slug: '10th-ke-baad', icon: 'compass', color: '#2563eb', description: 'Stream, Diploma, ITI और skill course चुनने की guide।', display_order: 13, enabled: true },
+    { id: 'cat-12th', name: 'After Class 12', name_hi: '12वीं के बाद क्या करें', slug: '12th-ke-baad', icon: 'graduation', color: '#7c3aed', description: 'PCM, PCB, Commerce और Arts के career options।', display_order: 14, enabled: true },
+    { id: 'cat-upsc', name: 'UPSC', name_hi: 'यूपीएससी', slug: 'upsc', icon: 'landmark', color: '#b45309', description: 'Civil Services preparation और official updates।', display_order: 15, enabled: true },
+    { id: 'cat-bihar-police', name: 'Bihar Police', name_hi: 'बिहार पुलिस', slug: 'bihar-police', icon: 'shield', color: '#0369a1', description: 'Bihar Police भर्ती, syllabus और practice resources।', display_order: 16, enabled: true },
+    { id: 'cat-up-police', name: 'UP Police', name_hi: 'यूपी पुलिस', slug: 'up-police', icon: 'shield', color: '#1d4ed8', description: 'UP Police recruitment और preparation content।', display_order: 17, enabled: true },
+    { id: 'cat-airforce', name: 'Air Force', name_hi: 'एयर फोर्स', slug: 'air-force', icon: 'shield', color: '#0891b2', description: 'Indian Air Force career और exam guidance।', display_order: 18, enabled: true },
+    { id: 'cat-static-gk', name: 'Static GK', name_hi: 'स्टैटिक जीके', slug: 'static-gk', icon: 'globe', color: '#15803d', description: 'बार-बार पूछे जाने वाले static facts और notes।', display_order: 19, enabled: true },
+    { id: 'cat-math-formula', name: 'Math Formula', name_hi: 'गणित फॉर्मूला', slug: 'math-formula', icon: 'calculator', color: '#0284c7', description: 'Chapter-wise important math formulas।', display_order: 20, enabled: true },
+    { id: 'cat-mock', name: 'Mock Test', name_hi: 'मॉक टेस्ट', slug: 'mock-test', icon: 'quiz', color: '#0f766e', description: 'Timed exam practice और instant score।', display_order: 21, enabled: true },
+    { id: 'cat-admit', name: 'Admit Card', name_hi: 'एडमिट कार्ड', slug: 'admit-card', icon: 'file', color: '#c2410c', description: 'Admit card releases और official links।', display_order: 22, enabled: true },
+    { id: 'cat-results', name: 'Results', name_hi: 'रिजल्ट', slug: 'results', icon: 'file', color: '#be123c', description: 'Exam result updates और official links।', display_order: 23, enabled: true }
+  ],
+  posts: [
+    { id: 'post-10', title: '10वीं के बाद क्या करें? Complete Career Roadmap', slug: '10th-ke-baad-kya-kare', summary: 'Science, Commerce, Arts, Diploma, ITI और Skill Courses को आसान भाषा में समझें।', content: '<p>10वीं के बाद लिया गया निर्णय आगे की पढ़ाई की दिशा तय करता है। सबसे पहले अपनी रुचि, पसंदीदा विषय और भविष्य के लक्ष्य को समझें।</p><h2>मुख्य विकल्प</h2><ul><li><strong>Science:</strong> Engineering, Medical, Research और Technology के लिए।</li><li><strong>Commerce:</strong> Accounts, Finance, Banking और Management के लिए।</li><li><strong>Arts:</strong> Civil Services, Law, Media, Design और Social Sciences के लिए।</li><li><strong>Diploma/ITI:</strong> Practical technical skills और early employment के लिए।</li></ul><div class="info-box">दोस्तों के दबाव में stream न चुनें। अपनी योग्यता, बजट और career goal देखकर निर्णय लें।</div>', category_id: 'cat-career', category: 'Career Guidance', featured_image: 'assets/images/career-10.svg', author: 'Tech Study Adda', status: 'published', featured: true, views: 1280, reading_time: 5, published_at: '2026-09-15T09:30:00Z', tags: ['class 10', 'career', 'stream'] },
+    { id: 'post-12', title: '12वीं के बाद क्या करें? Stream-wise Career Options', slug: '12th-ke-baad-career-options', summary: 'PCM, PCB, Commerce और Arts के बाद degree, entrance exam और job options जानें।', content: '<p>12वीं के बाद course चुनते समय केवल trend नहीं, बल्कि eligibility, fees, placement और long-term career scope देखें।</p><h2>Stream-wise विकल्प</h2><ul><li><strong>PCM:</strong> JEE, B.Tech, B.Arch, B.Sc, BCA और Defence.</li><li><strong>PCB:</strong> NEET, MBBS, BDS, BAMS, BHMS, Nursing, Pharmacy और Paramedical.</li><li><strong>Commerce:</strong> B.Com, BBA, CA, CS, CMA, Banking और Finance.</li><li><strong>Arts:</strong> BA, Law, Journalism, Psychology, Design और Civil Services.</li></ul><div class="info-box">Admission से पहले संबंधित college या examination authority की official eligibility जरूर जाँचें।</div>', category_id: 'cat-career', category: 'Career Guidance', featured_image: 'assets/images/career-12.svg', author: 'Tech Study Adda', status: 'published', featured: true, views: 940, reading_time: 6, published_at: '2026-09-15T10:00:00Z', tags: ['class 12', 'career', 'college'] },
+    { id: 'post-ssc', title: 'SSC परीक्षा की तैयारी शुरू करने का सही तरीका', slug: 'ssc-preparation-roadmap', summary: 'Syllabus, previous papers, mock tests और daily revision का practical plan।', content: '<p>SSC की तैयारी syllabus और previous-year questions से शुरू करें। हर दिन Quant, Reasoning, English और GK के लिए निश्चित समय रखें।</p><h2>चार जरूरी कदम</h2><ol><li>Official syllabus डाउनलोड करें।</li><li>Previous-year papers analyse करें।</li><li>Daily sectional practice करें।</li><li>Weekly full mock देकर गलतियों की notebook बनाएँ।</li></ol>', category_id: 'cat-jobs', category: 'Government Exams', featured_image: '', author: 'Tech Study Adda', status: 'published', featured: true, views: 2450, reading_time: 4, published_at: '2026-09-14T08:00:00Z', tags: ['ssc', 'government exam'] },
+    { id: 'post-gk', title: 'भारत के प्रमुख राष्ट्रीय प्रतीक', slug: 'bharat-ke-rashtriya-pratik', summary: 'Competitive exams में बार-बार पूछे जाने वाले राष्ट्रीय प्रतीकों की सूची।', content: '<p>भारत का राष्ट्रीय ध्वज तिरंगा, राष्ट्रीय पशु बाघ, राष्ट्रीय पक्षी मोर और राष्ट्रीय फूल कमल है। प्रश्नों को याद करने के साथ उनका महत्व भी समझें।</p>', category_id: 'cat-gk', category: 'GK & GS', featured_image: '', author: 'Tech Study Adda', status: 'published', featured: false, views: 3900, reading_time: 3, published_at: '2026-09-13T07:00:00Z', tags: ['gk', 'india'] },
+    { id: 'post-math', title: 'प्रतिशत के महत्वपूर्ण Formula और Short Tricks', slug: 'percentage-formula-tricks', summary: 'Percentage के प्रश्नों को कम समय में हल करने के जरूरी formula।', content: '<p><strong>प्रतिशत = (प्राप्त मान ÷ कुल मान) × 100</strong></p><p>प्रतिशत वृद्धि और कमी के प्रश्नों में base value पहचानना सबसे महत्वपूर्ण है। Practice के लिए रोज कम-से-कम 20 प्रश्न हल करें।</p>', category_id: 'cat-math', category: 'Math Tricks', featured_image: '', author: 'Tech Study Adda', status: 'published', featured: false, views: 1720, reading_time: 4, published_at: '2026-09-12T07:00:00Z', tags: ['math', 'percentage'] },
+    { id: 'post-study', title: 'Free Static GK Revision Notes', slug: 'static-gk-revision-notes', summary: 'SSC और Railway परीक्षा के लिए chapter-wise quick revision notes।', content: '<p>इन notes में History, Geography, Polity, Economy और General Science के महत्वपूर्ण one-liners शामिल हैं। नीचे दिए download section से PDF प्राप्त करें।</p>', category_id: 'cat-study', category: 'Study Material', featured_image: '', author: 'Tech Study Adda', status: 'published', featured: false, views: 2100, reading_time: 2, published_at: '2026-09-11T07:00:00Z', tags: ['notes', 'static gk'] }
+  ],
+  career_guides: [
+    { id: 'guide-1', title: 'Science PCM Career Guide', slug: 'science-pcm-career-guide', summary: 'Engineering से Defence तक PCM के प्रमुख रास्ते।', eligibility: '12वीं PCM', duration: 'Course के अनुसार', entrance_exam: 'JEE, CUET, NDA आदि', career_scope: 'Engineering, IT, Architecture, Research, Defence', category: 'PCM', status: 'published', featured: true, published_at: '2026-09-15T09:00:00Z' },
+    { id: 'guide-2', title: 'Science PCB Career Guide', slug: 'science-pcb-career-guide', summary: 'Medical, Nursing, Pharmacy और Life Sciences के विकल्प।', eligibility: '12वीं PCB', duration: '2–5.5 वर्ष', entrance_exam: 'NEET, CUET या संस्थान के नियम', career_scope: 'Healthcare, Research, Pharmacy, Allied Health', category: 'PCB', status: 'published', featured: true, published_at: '2026-09-15T09:00:00Z' },
+    { id: 'guide-3', title: 'Commerce Career Guide', slug: 'commerce-career-guide', summary: 'CA, CS, CMA, Banking और Management की राह।', eligibility: '12वीं उत्तीर्ण', duration: 'Course के अनुसार', entrance_exam: 'CUET तथा professional exams', career_scope: 'Finance, Accounts, Business, Banking', category: 'Commerce', status: 'published', featured: true, published_at: '2026-09-15T09:00:00Z' }
+  ],
+  exam_updates: [
+    { id: 'exam-1', title: 'SSC Exam Preparation Resources', slug: 'ssc-resources', exam_name: 'SSC', type: 'Study Plan', summary: 'Syllabus और practice resources एक जगह।', status: 'published', important_date: 'Official notice देखें', published_at: '2026-09-15T08:00:00Z' },
+    { id: 'exam-2', title: 'Railway Exam Practice Series', slug: 'railway-practice-series', exam_name: 'Railway', type: 'Mock Test', summary: 'RRB के लिए topic-wise practice set।', status: 'published', important_date: 'जल्द उपलब्ध', published_at: '2026-09-14T08:00:00Z' },
+    { id: 'exam-3', title: 'Defence Career Information', slug: 'defence-career', exam_name: 'Defence', type: 'Career', summary: 'NDA, Air Force और अन्य entry routes की जानकारी।', status: 'published', important_date: 'Official notice देखें', published_at: '2026-09-13T08:00:00Z' }
+  ],
+  current_affairs: [
+    { id: 'ca-1', title: 'आज के महत्वपूर्ण Current Affairs', slug: 'daily-current-affairs', summary: 'परीक्षा उपयोगी राष्ट्रीय, अंतरराष्ट्रीय, खेल और विज्ञान अपडेट।', status: 'published', published_at: '2026-09-15T06:00:00Z' }
+  ],
+  videos: [
+    { id: 'video-1', title: '10वीं के बाद क्या करें? Complete Career Roadmap', youtube_url: 'https://www.youtube.com/shorts/rIAtiXDNEyw', youtube_id: 'rIAtiXDNEyw', category: 'Career Guidance', duration: 'Short', status: 'published', featured: true, published_at: '2026-09-15T09:30:00Z' },
+    { id: 'video-2', title: 'SSC MTS Previous Year GK', youtube_url: 'https://www.youtube.com/watch?v=iXA1gsBB96Y', youtube_id: 'iXA1gsBB96Y', category: 'SSC', duration: '04:47', status: 'published', featured: true, published_at: '2024-07-01T08:00:00Z' },
+    { id: 'video-3', title: 'भारत के महत्वपूर्ण तथ्य', youtube_url: 'https://www.youtube.com/shorts/I3tpDr3so0Q', youtube_id: 'I3tpDr3so0Q', category: 'GK & GS', duration: 'Short', status: 'published', featured: false, published_at: '2024-08-01T08:00:00Z' }
+  ],
+  downloads: [
+    { id: 'download-1', title: 'Static GK Quick Revision Notes', slug: 'static-gk-notes', category: 'GK & GS', file_type: 'PDF', file_size: '2.4 MB', description: 'SSC और Railway के लिए chapter-wise revision notes।', file_url: '#', download_count: 1240, status: 'published', published_at: '2026-09-15T08:00:00Z' },
+    { id: 'download-2', title: 'Math Formula Sheet', slug: 'math-formula-sheet', category: 'Math Tricks', file_type: 'PDF', file_size: '1.1 MB', description: 'Arithmetic के महत्वपूर्ण formulas एक जगह।', file_url: '#', download_count: 890, status: 'published', published_at: '2026-09-14T08:00:00Z' },
+    { id: 'download-3', title: 'Career Selection Checklist', slug: 'career-checklist', category: 'Career Guidance', file_type: 'PDF', file_size: '620 KB', description: 'Course चुनने से पहले जरूरी points की checklist।', file_url: '#', download_count: 430, status: 'published', published_at: '2026-09-13T08:00:00Z' }
+  ],
+  quizzes: [
+    { id: 'quiz-1', title: 'भारत सामान्य ज्ञान Quiz', slug: 'india-gk-quiz', description: '10 महत्वपूर्ण प्रश्नों का quick practice test।', duration_minutes: 5, status: 'published', featured: true, attempts: 842, published_at: '2026-09-15T08:00:00Z' }
+  ],
+  quiz_questions: [
+    { id: 'q1', quiz_id: 'quiz-1', question: 'भारत की राजधानी क्या है?', options: ['मुंबई', 'नई दिल्ली', 'कोलकाता', 'चेन्नई'], correct_answer: 1, explanation: 'नई दिल्ली भारत की राष्ट्रीय राजधानी है।', display_order: 1 },
+    { id: 'q2', quiz_id: 'quiz-1', question: 'भारत का राष्ट्रीय पशु कौन है?', options: ['सिंह', 'हाथी', 'बाघ', 'गैंडा'], correct_answer: 2, explanation: 'Royal Bengal Tiger भारत का राष्ट्रीय पशु है।', display_order: 2 },
+    { id: 'q3', quiz_id: 'quiz-1', question: 'भारतीय संविधान कब लागू हुआ?', options: ['15 अगस्त 1947', '26 जनवरी 1950', '26 नवंबर 1949', '2 अक्टूबर 1950'], correct_answer: 1, explanation: 'भारतीय संविधान 26 जनवरी 1950 को लागू हुआ।', display_order: 3 },
+    { id: 'q4', quiz_id: 'quiz-1', question: 'क्षेत्रफल की दृष्टि से भारत का सबसे बड़ा राज्य कौन-सा है?', options: ['मध्य प्रदेश', 'उत्तर प्रदेश', 'राजस्थान', 'महाराष्ट्र'], correct_answer: 2, explanation: 'राजस्थान क्षेत्रफल की दृष्टि से भारत का सबसे बड़ा राज्य है।', display_order: 4 },
+    { id: 'q5', quiz_id: 'quiz-1', question: 'भारत का राष्ट्रीय फूल कौन-सा है?', options: ['गुलाब', 'कमल', 'गेंदा', 'सूरजमुखी'], correct_answer: 1, explanation: 'कमल भारत का राष्ट्रीय फूल है।', display_order: 5 }
+  ],
+  notices: [
+    { id: 'notice-1', title: '10वीं के बाद Career Roadmap अब उपलब्ध', url: 'post.html?slug=10th-ke-baad-kya-kare', active: true, display_order: 1 },
+    { id: 'notice-2', title: 'Free GK Quiz देकर अपना score जाँचें', url: 'quiz.html', active: true, display_order: 2 },
+    { id: 'notice-3', title: 'Tech Study Adda YouTube Channel को Subscribe करें', url: 'https://www.youtube.com/@techstudyadda', active: true, display_order: 3 }
+  ],
+  banners: [
+    { id: 'banner-1', title: 'Free Career Guidance Series', subtitle: '10वीं और 12वीं के बाद सही career roadmap देखें।', button_text: 'Explore Now', button_url: 'career.html', display_order: 1, active: true }
+  ],
+  media: [],
+  site_settings: [],
+  contact_messages: [],
+  subscribers: [],
+  activity_logs: []
+};
